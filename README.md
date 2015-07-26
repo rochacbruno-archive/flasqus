@@ -25,11 +25,13 @@ and then
 ```python
 from flask import Flask
 from flasqus import Flasqus
-from flasqus.backends.mongo import FlasqusMongoEngine
-# or
-from flasqus.backends.sqlalchemy import FlasqusSQLAlchemy
+
+# multiple database backends Mongo, SQL, Write your own
+from flasqus.backends.mongo import FlasqusMongoEngine  # or from flasqus.backends.sqlalchemy import FlasqusSQLAlchemy
 
 app = Flask(..)
+
+# configuration
 app.config['FLASQUS_MONGO_CONN'] = 'localhost:27017' # or app.config['FLASQUS_SQL_CONN'] = 'mysql://....'
 app.config['FLASQUS_DATABASE'] = 'myappdb'
 app.config['FLASQUS_COLLECTION'] = 'flasqus' # or app.config['FLASQUS_TABLE'] = 'flasqus'
@@ -37,10 +39,23 @@ app.config['FLASQUS_ENDPOINT'] = 'flasqus'
 app.config['FLASQUS_URL_BASE'] = '/comments'
 app.config['FLASQUS_AUTH_SYSTEM'] = 'flask_security'
 
+# initialization
 Flasqus(app, backend=FlasqusMongoEngine)
 ```
 
-With the above your app now will have the comment application mapped to **/comments** url and you will be able to add the following script to your post template in order to show the comment widget.
+With the above your app now will have the comment application mapped to **/comments** url and you will be able to show the comment widget in any page you want with Jinja.
+
+```html
+<html>
+   <h1> {{post.title}}</h2>
+   <p> {{post.body|safe}}</p>
+   
+   <h2>Comments</h2>
+   {{flasqus()}}
+</html>
+```
+
+Or using Javascript directly
 
 ```javascript
 <div id="flasqus_thread"></div>
@@ -58,17 +73,7 @@ With the above your app now will have the comment application mapped to **/comme
 <noscript>Please enable JavaScript. comments powered by Flasqus</noscript>
 ```
 
-Or you can forget javaScript and user Jinja Global to add
 
-```html
-<html>
-   <h1> {{post.title}}</h2>
-   <p> {{post.body|safe}}</p>
-   
-   <h2>Comments</h2>
-   {{flasqus()}}
-</html>
-```
 
 
 
